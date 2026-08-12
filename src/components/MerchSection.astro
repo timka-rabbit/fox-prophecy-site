@@ -5,11 +5,11 @@ import OrderModal from './OrderModal.astro';
 
 interface Props {
   items: CollectionEntry<'merch'>[];
-  googleFormBaseUrl: string;
+  googleFormUrl: string;
   paymentLink: string;
 }
 
-const { items, googleFormBaseUrl, paymentLink } = Astro.props;
+const { items, googleFormUrl, paymentLink } = Astro.props;
 ---
 
 <section id="merch" class="py-16 px-6">
@@ -57,7 +57,7 @@ const { items, googleFormBaseUrl, paymentLink } = Astro.props;
             <OrderModal 
               productName={item.data.productName} 
               price={item.data.price} 
-              googleFormBaseUrl={googleFormBaseUrl} 
+              googleFormUrl={googleFormUrl}
               paymentLink={paymentLink}
               modalId={`modal-${item.id}`}
             />
@@ -70,7 +70,6 @@ const { items, googleFormBaseUrl, paymentLink } = Astro.props;
 
 <script client:load>
   document.addEventListener('DOMContentLoaded', () => {
-    // Обработчик для всех кнопок "Заказать"
     document.querySelectorAll('[data-open-modal]').forEach(button => {
       button.addEventListener('click', () => {
         const modalId = button.getAttribute('data-open-modal');
@@ -82,7 +81,6 @@ const { items, googleFormBaseUrl, paymentLink } = Astro.props;
       });
     });
 
-    // Обработчик для закрытия модалок
     document.querySelectorAll('[data-close-modal]').forEach(element => {
       element.addEventListener('click', () => {
         const modal = element.closest('.modal');
@@ -93,7 +91,6 @@ const { items, googleFormBaseUrl, paymentLink } = Astro.props;
       });
     });
 
-    // Закрытие по Escape
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         document.querySelectorAll('.modal:not(.hidden)').forEach(modal => {

@@ -2,12 +2,12 @@ productName: "Mini-CD «Dark Matter»"
 description: "Физическое издание дебютного альбома в формате mini-CD с текстами всех песен."
 price: 500
 images:
-  - "/merch/mini-cd-front.jpg"
-  - "/merch/mini-cd-disc.jpg"
-  - "/merch/mini-cd-booklet-1.jpg"
-  - "/merch/mini-cd-back.jpg"
+  - "/merch/mini-cd-dark-matter/mini-cd-front.jpg"
+  - "/merch/mini-cd-dark-matter/mini-cd-disc.jpg"
+  - "/merch/mini-cd-dark-matter/mini-cd-booklet-1.jpg"
+  - "/merch/mini-cd-dark-matter/mini-cd-back.jpg"
 albumSlug: "dark-matter"
-quantity: 0
+quantity: 1
 features:
   - "Диск mini-CD"
   - "Печатный буклет"
