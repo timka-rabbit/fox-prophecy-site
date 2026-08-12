@@ -1,0 +1,12 @@
+---
+interface Props {
+  bio: string;
+}
+
+const { bio } = Astro.props;
+---
+
+<section id="about" class="py-20 px-6 max-w-4xl mx-auto text-center">
+  <h2 class="text-3xl font-bold mb-8 tracking-tight">О проекте</h2>
+  <p class="text-lg text-zinc-300 leading-relaxed max-w-2xl mx-auto">{bio}</p>
+</section>

@@ -1,0 +1,106 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ImageCarousel from './ImageCarousel.astro';
+import OrderModal from './OrderModal.astro';
+
+interface Props {
+  items: CollectionEntry<'merch'>[];
+  googleFormBaseUrl: string;
+  paymentLink: string;
+}
+
+const { items, googleFormBaseUrl, paymentLink } = Astro.props;
+---
+
+<section id="merch" class="py-16 px-6">
+  <div class="max-w-6xl mx-auto">
+    <h2 class="text-3xl font-bold mb-12 tracking-tight text-center">Мерч</h2>
+    
+    <div class="flex justify-center">
+      {items.map((item) => (
+        <div class="bg-zinc-950 rounded-xl overflow-hidden border border-zinc-800 max-w-md w-full">
+          <ImageCarousel images={item.data.images} productName={item.data.productName} />
+          
+          <div class="p-6">
+            <h3 class="text-xl font-bold mb-2 text-center">{item.data.productName}</h3>
+            <p class="text-zinc-400 mb-4 text-center text-sm">{item.data.description}</p>
+            
+            {item.data.features && (
+              <ul class="mb-6 space-y-2 text-sm text-zinc-300">
+                <li class="font-semibold text-zinc-100 mb-3 text-center">В комплекте:</li>
+                {item.data.features.map((feature) => (
+                  <li class="flex items-center justify-center gap-2">
+                    <span class="text-green-500">✓</span>
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            
+            <div class="flex items-center justify-center pt-4 border-t border-zinc-800">
+              <span class="text-2xl font-mono font-bold mr-6">{item.data.price} ₽</span>
+              
+              {item.data.quantity > 0 ? (
+                <button 
+                  class="px-6 py-3 bg-white text-black font-semibold rounded-full hover:bg-zinc-200 transition-colors"
+                  data-open-modal={`modal-${item.id}`}
+                >
+                  Заказать
+                </button>
+              ) : (
+                <span class="text-zinc-500 text-sm">Нет в наличии</span>
+              )}
+            </div>
+          </div>
+          
+          {item.data.quantity > 0 && (
+            <OrderModal 
+              productName={item.data.productName} 
+              price={item.data.price} 
+              googleFormBaseUrl={googleFormBaseUrl} 
+              paymentLink={paymentLink}
+              modalId={`modal-${item.id}`}
+            />
+          )}
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script client:load>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Обработчик для всех кнопок "Заказать"
+    document.querySelectorAll('[data-open-modal]').forEach(button => {
+      button.addEventListener('click', () => {
+        const modalId = button.getAttribute('data-open-modal');
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+        }
+      });
+    });
+
+    // Обработчик для закрытия модалок
+    document.querySelectorAll('[data-close-modal]').forEach(element => {
+      element.addEventListener('click', () => {
+        const modal = element.closest('.modal');
+        if (modal) {
+          modal.classList.add('hidden');
+          document.body.style.overflow = '';
+        }
+      });
+    });
+
+    // Закрытие по Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal:not(.hidden)').forEach(modal => {
+          modal.classList.add('hidden');
+          document.body.style.overflow = '';
+        });
+      }
+    });
+  });
+</script>

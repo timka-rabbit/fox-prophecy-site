@@ -1,17 +1,40 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroSection from '../components/HeroSection.astro';
+import AboutSection from '../components/AboutSection.astro';
+import DiscographySection from '../components/DiscographySection.astro';
+import MerchSection from '../components/MerchSection.astro';
+import Footer from '../components/Footer.astro';
 
+import { getCollection } from 'astro:content';
+
+const albums = await getCollection('albums');
+const merchItems = await getCollection('merch');
+
+// Конфигурация интеграций
+const GOOGLE_FORM_BASE_URL = "https://docs.google.com/forms/d/e/1FAIpQLSf01TPTAYnbpQ2AaY0BtTHurD10hd8ulBOafFgdhQmFkjIrjQ/viewform?embedded=true";
+const YOOKASSA_PAYMENT_LINK = "https://yookassa.ru/integration/payment/link?id=YOUR_REAL_LINK_ID";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="Fox Prophecy | Official Site">
+  <main class="flex flex-col min-h-screen bg-zinc-950 text-zinc-100">
+    <HeroSection 
+      artistName="Fox Prophecy" 
+      heroImage="/photos/fox-prophecy-hero.jpg" 
+    />
+    
+    <AboutSection 
+      bio="Fox Prophecy — российский сольный метал-проект Буянова Артёма Дмитриевича в поджанрах альтернативный метал, металкор и пост-хардкор." 
+    />
+    
+    <DiscographySection albums={albums} />
+    
+    <MerchSection 
+      items={merchItems}
+      googleFormBaseUrl={GOOGLE_FORM_BASE_URL}
+      paymentLink={YOOKASSA_PAYMENT_LINK}
+    />
+    
+    <Footer />
+  </main>
+</BaseLayout>

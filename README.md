@@ -1,43 +1,31 @@
-# Astro Starter Kit: Minimal
+# 🦊 Fox Prophecy | Official Website
 
-```sh
-npm create astro@latest -- --template minimal
-```
+Официальный сайт сольного метал-проекта **Fox Prophecy** (альтернативный метал, металкор, пост-хардкор). 
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Сайт представляет музыку, дискографию и предоставляет возможность заказа физического мерча (mini-CD «Dark Matter») напрямую от автора.
 
-## 🚀 Project Structure
+## 🚀 Особенности
 
-Inside of your Astro project, you'll see the following folders and files:
+- ⚡️ **Скорость**: Построен на [Astro](https://astro.build/) (статическая генерация, 0kb JS по умолчанию).
+- 🎨 **Адаптивный дизайн**: Полностью адаптирован под мобильные устройства с использованием [Tailwind CSS](https://tailwindcss.com/).
+- 🛒 **Интеграция заказов**: Бесшовная связка Google Forms (сбор данных доставки) и ЮKassa (приём платежей).
+- 🖼️ **Галерея мерча**: Кастомная легковесная карусель изображений без тяжёлых зависимостей.
+- 🔒 **Безопасность**: Хостинг на Cloudflare Pages с бесплатным SSL и защитой от DDoS.
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+## 🛠️ Технологический стек
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+- **Framework**: [Astro](https://astro.build/) + TypeScript
+- **Стилизация**: [Tailwind CSS](https://tailwindcss.com/)
+- **Контент**: Astro Content Collections (YAML + Zod валидация)
+- **Платежи**: ЮKassa (платёжные ссылки)
+- **Сбор данных**: Google Forms + Google Sheets
+- **Деплой**: Cloudflare Pages
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## 📦 Начало работы
 
-Any static assets, like images, can be placed in the `public/` directory.
+Убедитесь, что у вас установлен [Node.js](https://nodejs.org/) (версия 18+).
 
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+1. Клонируйте репозиторий:
+   ```bash
+   git clone https://github.com/ТВОЙ_НИК/fox-prophecy-site.git
+   cd fox-prophecy-site

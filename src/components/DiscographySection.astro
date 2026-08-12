@@ -1,0 +1,78 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  albums: CollectionEntry<'albums'>[];
+}
+
+const { albums } = Astro.props;
+const sortedAlbums = albums.sort((a, b) => b.data.releaseDate.getTime() - a.data.releaseDate.getTime());
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('ru-RU', { 
+    day: 'numeric', 
+    month: 'long', 
+    year: 'numeric' 
+  });
+}
+
+const musicPlatforms = [
+  { name: "Yandex Music", url: "https://music.yandex.ru/album/42510892" },
+  { name: "VK Music", url: "https://vk.ru/music/album/-2000989942_27989942_cc6918954d8c02d5a1" },
+  { name: "Spotify", url: "https://open.spotify.com/album/4vBQD2GNLFqtr5HgGhuEMF?si=TCNikDZmSAmPo1NsKOj7Hg" },
+  { name: "Apple Music", url: "https://music.apple.com/us/artist/fox-prophecy/1883724705" },
+];
+---
+
+<section id="discography" class="py-16 px-6 max-w-5xl mx-auto">
+  <h2 class="text-3xl font-bold mb-12 tracking-tight text-center">Дискография</h2>
+  
+  <div class="space-y-16">
+    {sortedAlbums.map((album) => (
+      <article class="grid md:grid-cols-[1fr_1fr] gap-10 items-stretch">
+        <div class="flex flex-col">
+          <img 
+            src={album.data.coverImage} 
+            alt={`Обложка альбома ${album.data.title}`} 
+            class="w-full aspect-square object-cover rounded-sm shadow-lg" 
+            loading="lazy" 
+          />
+          <!-- Ссылки на площадки под обложкой -->
+          <div class="mt-4 flex flex-wrap gap-3 justify-center">
+            {musicPlatforms.map((platform) => (
+              <a 
+                href={platform.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-xs text-zinc-400 hover:text-white transition-colors border border-zinc-800 px-3 py-1.5 rounded-full"
+              >
+                {platform.name}
+              </a>
+            ))}
+          </div>
+        </div>
+        
+        <div class="flex flex-col">
+          <h3 class="text-xl font-semibold mb-2">{album.data.title}</h3>
+          <time class="text-zinc-400 text-sm block mb-4">{formatDate(album.data.releaseDate)}</time>
+          
+          {album.data.description && (
+            <p class="text-zinc-400 text-sm mb-4">{album.data.description}</p>
+          )}
+          
+          <ol class="space-y-1 text-zinc-300 flex-grow">
+            {album.data.tracks.map((track, index) => (
+              <li class="flex justify-between py-2 border-b border-zinc-800 last:border-0 text-sm">
+                <span>
+                  <span class="text-zinc-500 mr-4 w-6 inline-block text-right">{index + 1}.</span>
+                  {track.name}
+                </span>
+                <span class="text-zinc-500 tabular-nums ml-4">{track.duration}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>

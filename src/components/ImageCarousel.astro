@@ -1,0 +1,137 @@
+---
+interface Props {
+  images: string[];
+  productName: string;
+}
+
+const { images, productName } = Astro.props;
+const carouselId = `carousel-${Math.random().toString(36).substring(7)}`;
+---
+
+<div class="carousel-container relative w-full overflow-hidden rounded-lg bg-zinc-900 aspect-square" id={carouselId}>
+  <!-- Слайды -->
+  <div class="carousel-track flex transition-transform duration-500 ease-out h-full" data-track>
+    {images.map((image, index) => (
+      <div class="carousel-slide min-w-full h-full" data-slide={index}>
+        <img 
+          src={image} 
+          alt={`${productName} - фото ${index + 1}`} 
+          class="w-full h-full object-cover select-none" 
+          loading={index === 0 ? "eager" : "lazy"} 
+          draggable="false"
+        />
+      </div>
+    ))}
+  </div>
+
+  <!-- Стрелки (показываем только если больше 1 фото) -->
+  {images.length > 1 && (
+    <>
+      <button 
+        class="carousel-prev absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/70 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-sm transition-colors z-10"
+        aria-label="Предыдущее фото"
+        data-prev
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <button 
+        class="carousel-next absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/70 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-sm transition-colors z-10"
+        aria-label="Следующее фото"
+        data-next
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+
+      <!-- Индикаторы -->
+      <div class="carousel-dots absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10" data-dots>
+        {images.map((_, index) => (
+          <button 
+            class={`dot w-2 h-2 rounded-full transition-all ${index === 0 ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/75'}`}
+            aria-label={`Перейти к фото ${index + 1}`}
+            data-dot={index}
+          ></button>
+        ))}
+      </div>
+    </>
+  )}
+</div>
+
+<script client:visible>
+  document.querySelectorAll('.carousel-container').forEach((container) => {
+    const track = container.querySelector('[data-track]');
+    const prevBtn = container.querySelector('[data-prev]');
+    const nextBtn = container.querySelector('[data-next]');
+    const dots = container.querySelectorAll('[data-dot]');
+    
+    if (!track || !dots.length) return;
+    
+    let currentIndex = 0;
+    const totalSlides = dots.length;
+
+    const updateCarousel = () => {
+      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+      dots.forEach((dot, i) => {
+        if (i === currentIndex) {
+          dot.classList.remove('bg-white/50', 'w-2');
+          dot.classList.add('bg-white', 'w-6');
+        } else {
+          dot.classList.remove('bg-white', 'w-6');
+          dot.classList.add('bg-white/50', 'w-2');
+        }
+      });
+    };
+
+    const goToSlide = (index) => {
+      currentIndex = ((index % totalSlides) + totalSlides) % totalSlides;
+      updateCarousel();
+    };
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        goToSlide(currentIndex - 1);
+      });
+    }
+    
+    if (nextBtn) {
+      nextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        goToSlide(currentIndex + 1);
+      });
+    }
+    
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        goToSlide(i);
+      });
+    });
+
+    // Свайпы для мобильных
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    container.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    
+    container.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      const diff = touchStartX - touchEndX;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) {
+          goToSlide(currentIndex + 1);
+        } else {
+          goToSlide(currentIndex - 1);
+        }
+      }
+    }, { passive: true });
+
+    // Инициализация
+    updateCarousel();
+  });
+</script>

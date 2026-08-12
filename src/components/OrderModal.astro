@@ -1,0 +1,70 @@
+---
+interface Props {
+  productName: string;
+  price: number;
+  paymentLink: string;
+  googleFormBaseUrl: string;
+  modalId: string;
+}
+
+const { productName, price, paymentLink, googleFormBaseUrl, modalId } = Astro.props;
+const formUrl = `${googleFormBaseUrl}&entry.1417067779=${encodeURIComponent(productName)}`;
+---
+
+<div class="modal hidden fixed inset-0 z-50 overflow-y-auto" id={modalId}>
+  <div class="modal-backdrop absolute inset-0 bg-black/80 backdrop-blur-sm" data-close-modal></div>
+  
+  <div class="relative min-h-screen flex items-center justify-center p-4">
+    <div class="modal-content relative bg-zinc-950 border border-zinc-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+      <button 
+        class="absolute top-4 right-4 w-10 h-10 rounded-full bg-zinc-900 hover:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white transition-colors z-10"
+        data-close-modal
+        aria-label="Закрыть"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div class="p-6 border-b border-zinc-800">
+        <h3 class="text-2xl font-bold">Заказ: {productName}</h3>
+        <p class="text-zinc-400 mt-1">Стоимость: <span class="text-white font-mono">{price} ₽</span></p>
+      </div>
+
+      <div class="p-6 space-y-6">
+        <div>
+          <div class="flex items-center gap-3 mb-3">
+            <span class="w-8 h-8 rounded-full bg-zinc-100 text-zinc-950 flex items-center justify-center font-bold">1</span>
+            <h4 class="font-semibold">Укажите данные для доставки</h4>
+          </div>
+          <p class="text-sm text-zinc-400 mb-3">Товар уже выбран. Осталось указать ФИО, email и адрес.</p>
+          <div class="rounded-lg overflow-hidden border border-zinc-800 bg-white">
+            <iframe 
+              src={formUrl}
+              class="w-full h-[500px] border-0"
+              title="Форма заказа"
+              loading="lazy"
+            ></iframe>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex items-center gap-3 mb-3">
+            <span class="w-8 h-8 rounded-full bg-zinc-100 text-zinc-950 flex items-center justify-center font-bold">2</span>
+            <h4 class="font-semibold">Оплатите заказ</h4>
+          </div>
+          <p class="text-sm text-zinc-400 mb-4">После заполнения формы нажмите кнопку ниже.</p>
+          
+          <a 
+            href={paymentLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block w-full py-4 bg-zinc-100 text-zinc-950 text-center font-semibold rounded-lg hover:bg-white transition-colors"
+          >
+            Перейти к оплате ({price} ₽)
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
