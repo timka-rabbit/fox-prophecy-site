@@ -1,5 +1,7 @@
 ---
 const contactEmail = "ar.buyanow@yandex.ru";
+const sellerName = "Буянов Артём Дмитриевич";
+const sellerInn = "330710418720";
 
 const socialLinks = [
   {
@@ -18,7 +20,6 @@ const musicPlatforms = [
   {
     name: "Yandex Music",
     url: "https://music.yandex.ru/artist/25591926",
-    // Буква Y в круге
     icon: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9 8l3 4v4M15 8l-3 4"/></svg>`,
   },
   {
@@ -41,9 +42,10 @@ const musicPlatforms = [
 
 <footer class="bg-zinc-950 border-t border-zinc-900 py-16 px-6">
   <div class="max-w-6xl mx-auto">
+    <!-- Три колонки -->
     <div class="grid md:grid-cols-3 gap-12 mb-12">
       
-      <!-- Колонка 1: О группе (теперь по центру) -->
+      <!-- Колонка 1: О проекте -->
       <div class="text-center">
         <h3 class="text-lg font-bold mb-4 font-['Space_Grotesk']">Fox Prophecy</h3>
         <p class="text-sm text-zinc-500 leading-relaxed">
@@ -51,7 +53,7 @@ const musicPlatforms = [
         </p>
       </div>
 
-      <!-- Колонка 2: Контакты (по центру, заголовок в едином стиле) -->
+      <!-- Колонка 2: Контакты -->
       <div class="text-center">
         <h3 class="text-lg font-bold mb-4 font-['Space_Grotesk']">Контакты</h3>
         <ul class="space-y-3">
@@ -74,7 +76,7 @@ const musicPlatforms = [
         </ul>
       </div>
 
-      <!-- Колонка 3: Странички музыканта (по центру, заголовок в едином стиле) -->
+      <!-- Колонка 3: Музыкальные платформы -->
       <div class="text-center">
         <h3 class="text-lg font-bold mb-4 font-['Space_Grotesk']">Странички музыканта</h3>
         <ul class="space-y-3">
@@ -91,9 +93,19 @@ const musicPlatforms = [
 
     </div>
 
-    <!-- Копирайт -->
-    <div class="pt-8 border-t border-zinc-900 text-center text-xs text-zinc-600">
+    <!-- Отдельная строка с реквизитами (на всю ширину) -->
+    <div class="py-6 border-t border-zinc-800/50 text-center text-xs text-zinc-500 space-y-1">
+      <p>Продавец: {sellerName}</p>
+      <p>Статус: Самозанятый (НПД)</p>
+      <p>ИНН: {sellerInn}</p>
+    </div>
+
+    <!-- Копирайт и оферта -->
+    <div class="pt-8 border-t border-zinc-800/50 text-center text-xs text-zinc-600">
       <p>© {new Date().getFullYear()} Fox Prophecy. Все права защищены.</p>
+      <div class="mt-2">
+        <a href="/legal" class="hover:text-zinc-400 transition-colors">Публичная оферта</a>
+      </div>
     </div>
   </div>
 </footer>
