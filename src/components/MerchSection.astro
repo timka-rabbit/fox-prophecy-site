@@ -12,9 +12,9 @@ interface Props {
 const { items, googleFormUrl, paymentLink } = Astro.props;
 ---
 
-<section id="merch" class="py-16 px-6">
+<section id="merch" class="py-4 md:py-8 px-6">
   <div class="max-w-6xl mx-auto">
-    <h2 class="text-3xl font-bold mb-12 tracking-tight text-center">Мерч</h2>
+    <h2 class="text-3xl font-bold mb-4 md:mb-6 tracking-tight text-center">Мерч</h2>
     
     <div class="flex justify-center">
       {items.map((item) => (
