@@ -3,9 +3,28 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="Публичная оферта | Fox Prophecy">
-  <main class="min-h-screen bg-zinc-950 text-zinc-100 py-4 md:py-8 px-6">
+  <main class="min-h-screen bg-zinc-950 text-zinc-100 py-8 md:py-12 px-6">
     <div class="max-w-4xl mx-auto">
-      <h1 class="text-4xl font-bold mb-8">Публичная оферта</h1>
+      
+      <!-- Кнопка "На главную" -->
+      <a 
+        href="/" 
+        class="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-8 group w-fit"
+      >
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          class="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-200" 
+          fill="none" 
+          viewBox="0 0 24 24" 
+          stroke="currentColor" 
+          stroke-width="2"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        <span class="text-sm font-medium">На главную</span>
+      </a>
+
+      <h1 class="text-3xl md:text-4xl font-bold mb-8">Публичная оферта</h1>
       
       <div class="prose prose-invert max-w-none space-y-6 text-zinc-300">
         <section>
@@ -43,25 +62,25 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         </section>
 
         <section>
-		  <h2 class="text-2xl font-bold text-white mb-4">4. Оплата</h2>
-		  <p>
-			4.1. Оплата производится через платёжную систему ЮKassa.
-		  </p>
-		  <p>
-			4.2. Способы оплаты: банковские карты, СБП, электронные кошельки.
-		  </p>
-		  <p>
-			4.3. Официальным подтверждением оплаты является электронный чек, 
-			формируемый Продавцом в приложении «Мой налог» в соответствии с 
-			ФЗ № 422-ФЗ. Чек направляется Покупателю на указанный email 
-			<strong> при обработке заказа и подготовке его к отправке</strong>.
-		  </p>
-		  <p>
-			4.4. Сразу после проведения платежа Покупатель также получает 
-			автоматическое уведомление от платёжной системы ЮKassa, 
-			подтверждающее факт успешного списания средств.
-		  </p>
-		</section>
+          <h2 class="text-2xl font-bold text-white mb-4">4. Оплата</h2>
+          <p>
+            4.1. Оплата производится через платёжную систему ЮKassa.
+          </p>
+          <p>
+            4.2. Способы оплаты: банковские карты, СБП, электронные кошельки.
+          </p>
+          <p>
+            4.3. Официальным подтверждением оплаты является электронный чек, 
+            формируемый Продавцом в приложении «Мой налог» в соответствии с 
+            ФЗ № 422-ФЗ. Чек направляется Покупателю на указанный email 
+            <strong>при обработке заказа и подготовке его к отправке</strong>.
+          </p>
+          <p>
+            4.4. Сразу после проведения платежа Покупатель также получает 
+            автоматическое уведомление от платёжной системы ЮKassa, 
+            подтверждающее факт успешного списания средств.
+          </p>
+        </section>
 
         <section>
           <h2 class="text-2xl font-bold text-white mb-4">5. Доставка</h2>
@@ -114,7 +133,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           <p>
             <strong>ФИО:</strong> Буянов Артём Дмитриевич<br />
             <strong>Статус:</strong> Самозанятый (НПД)<br />
-            <strong>ИНН:</strong> 330710418720 <br />
+            <strong>ИНН:</strong> 330710418720<br />
             <strong>Email:</strong> ar.buyanow@yandex.ru<br />
             <strong>Telegram:</strong> @fox_prophecy_metal<br />
             <strong>Сайт:</strong> fox-prophecy.ru
