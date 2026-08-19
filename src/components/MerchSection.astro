@@ -10,60 +10,101 @@ interface Props {
 }
 
 const { items, googleFormUrl, paymentLink } = Astro.props;
+
+// Стили для бейджа статуса
+const getStatusBadge = (status: string) => {
+  if (status === 'coming-soon') {
+    return { text: 'В разработке', color: 'text-yellow-400 border-yellow-400/30 bg-yellow-400/10' };
+  }
+  if (status === 'sold-out') {
+    return { text: 'Нет в наличии', color: 'text-zinc-500 border-zinc-500/30 bg-zinc-500/10' };
+  }
+  return { text: 'В наличии', color: 'text-green-400 border-green-400/30 bg-green-400/10' };
+};
 ---
 
 <section id="merch" class="py-4 md:py-8 px-6">
   <div class="max-w-6xl mx-auto">
     <h2 class="text-3xl font-bold mb-4 md:mb-6 tracking-tight text-center">Мерч</h2>
     
-    <div class="flex justify-center">
-      {items.map((item) => (
-        <div class="bg-zinc-950 rounded-xl overflow-hidden border border-zinc-800 max-w-md w-full">
-          <ImageCarousel images={item.data.images} productName={item.data.productName} />
-          
-          <div class="p-6">
-            <h3 class="text-xl font-bold mb-2 text-center">{item.data.productName}</h3>
-            <p class="text-zinc-400 mb-4 text-center text-sm">{item.data.description}</p>
+    <div class="flex flex-col md:flex-row flex-wrap justify-center gap-8">
+      {items.map((item) => {
+        const statusInfo = getStatusBadge(item.data.status || 'available');
+        const isAvailable = item.data.status === 'available';
+        const isComingSoon = item.data.status === 'coming-soon';
+        const isSoldOut = item.data.status === 'sold-out';
+
+        return (
+          <div class="bg-zinc-950 rounded-xl overflow-hidden border border-zinc-800 max-w-md w-full flex flex-col">
             
-            {item.data.features && (
-              <ul class="mb-6 space-y-2 text-sm text-zinc-300">
-                <li class="font-semibold text-zinc-100 mb-3 text-center">В комплекте:</li>
-                {item.data.features.map((feature) => (
-                  <li class="flex items-center justify-center gap-2">
-                    <span class="text-green-500">✓</span>
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-            
-            <div class="flex items-center justify-center pt-4 border-t border-zinc-800">
-              <span class="text-2xl font-mono font-bold mr-6">{item.data.price} ₽</span>
-              
-              {item.data.quantity > 0 ? (
-                <button 
-                  class="px-6 py-3 bg-white text-black font-semibold rounded-full hover:bg-zinc-200 transition-colors"
-                  data-open-modal={`modal-${item.id}`}
-                >
-                  Заказать
-                </button>
+            {/* Область изображения или заглушки */}
+            <div class="relative w-full aspect-square bg-zinc-900">
+              {isComingSoon ? (
+                <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+                  <svg class="w-16 h-16 mb-4 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                  </svg>
+                  <span class={`px-4 py-2 rounded-full text-sm font-semibold border ${statusInfo.color}`}>
+                    {statusInfo.text}
+                  </span>
+                </div>
               ) : (
-                <span class="text-zinc-500 text-sm">Нет в наличии</span>
+                <ImageCarousel images={item.data.images || []} productName={item.data.productName} />
               )}
             </div>
+            
+            <div class="p-6 flex flex-col flex-grow">
+              <h3 class="text-xl font-bold mb-2 text-center">{item.data.productName}</h3>
+              <p class="text-zinc-400 mb-4 text-center text-sm flex-grow">{item.data.description}</p>
+              
+              {item.data.features && (
+                <ul class="mb-6 space-y-2 text-sm text-zinc-300">
+                  <li class="font-semibold text-zinc-100 mb-3 text-center">В комплекте:</li>
+                  {item.data.features.map((feature) => (
+                    <li class="flex items-center justify-center gap-2">
+                      <span class="text-green-500">✓</span>
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              
+              {/* Цена и кнопка/статус */}
+				<div class="flex items-center justify-center pt-4 border-t border-zinc-800 mt-auto">
+				  {isComingSoon ? (
+					<span class="text-yellow-400 text-sm font-medium w-full text-center">Скоро в продаже</span>
+				  ) : isAvailable ? (
+					<>
+					  <span class="text-2xl font-mono font-bold mr-6">{item.data.price} ₽</span>
+					  <button 
+						class="px-6 py-3 bg-white text-black font-semibold rounded-full hover:bg-zinc-200 transition-colors"
+						data-open-modal={`modal-${item.id}`}
+					  >
+						Заказать
+					  </button>
+					</>
+				  ) : (
+					<>
+					  <span class="text-2xl font-mono font-bold mr-6 text-zinc-500">{item.data.price} ₽</span>
+					  <span class="text-zinc-500 text-sm">Нет в наличии</span>
+					</>
+				  )}
+				</div>
+            </div>
+            
+            {/* Модалка только для доступных товаров */}
+            {isAvailable && (
+              <OrderModal 
+                productName={item.data.productName} 
+                price={item.data.price} 
+                googleFormUrl={googleFormUrl}
+                paymentLink={paymentLink}
+                modalId={`modal-${item.id}`}
+              />
+            )}
           </div>
-          
-          {item.data.quantity > 0 && (
-            <OrderModal 
-              productName={item.data.productName} 
-              price={item.data.price} 
-              googleFormUrl={googleFormUrl}
-              paymentLink={paymentLink}
-              modalId={`modal-${item.id}`}
-            />
-          )}
-        </div>
-      ))}
+        );
+      })}
     </div>
   </div>
 </section>

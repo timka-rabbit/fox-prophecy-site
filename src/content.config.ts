@@ -2,7 +2,7 @@ import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
 const albums = defineCollection({
-  // Ищем и .yaml, и .yml файлы
+  // Ищем .yaml и .yml файлы
   loader: glob({ pattern: '**/*.{yaml,yml}', base: './src/content/albums' }),
   schema: z.object({
     title: z.string(),
@@ -17,15 +17,16 @@ const albums = defineCollection({
 });
 
 const merch = defineCollection({
+  // Ищем .yaml и .yml файлы
   loader: glob({ pattern: '**/*.{yaml,yml}', base: './src/content/merch' }),
   schema: z.object({
     productName: z.string(),
     description: z.string(),
     price: z.number(),
-    images: z.array(z.string()).min(1),
+    images: z.array(z.string()).optional(),
     albumSlug: z.string().optional(),
-    quantity: z.number().default(0),
     features: z.array(z.string()).optional(),
+    status: z.enum(['available', 'coming-soon', 'sold-out']).default('available'),
   }),
 });
 
