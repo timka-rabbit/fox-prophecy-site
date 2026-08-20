@@ -29,23 +29,27 @@ const musicPlatforms = [
   
   <div class="space-y-16">
     {sortedAlbums.map((album) => (
-      <article class="grid md:grid-cols-[1fr_1fr] gap-10 items-stretch">
+      <article class="grid md:grid-cols-[1fr_1fr] gap-8 md:gap-10 items-stretch">
+        
+        <!-- Левая часть: Обложка и кнопки -->
         <div class="flex flex-col">
           <img 
             src={album.data.coverImage} 
             alt={`Обложка альбома ${album.data.title}`} 
             class="w-full aspect-square object-cover rounded-sm shadow-lg" 
             loading="lazy" 
-			decoding="async"
+            decoding="async"
           />
-          <!-- Ссылки на площадки под обложкой -->
-          <div class="mt-4 flex flex-wrap gap-3 justify-center">
+          
+          <!-- Ссылки на площадки -->
+          <!-- На телефоне: сетка 2x2 для идеального выравнивания. На ПК: flex-контейнер в ряд -->
+          <div class="mt-4 grid grid-cols-2 gap-2 md:flex md:flex-wrap md:justify-center md:gap-3">
             {musicPlatforms.map((platform) => (
               <a 
                 href={platform.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-xs text-zinc-400 hover:text-white transition-colors border border-zinc-800 px-3 py-1.5 rounded-full"
+                class="text-center text-xs text-zinc-400 hover:text-white hover:border-zinc-600 transition-colors border border-zinc-800 px-3 py-2 rounded-full"
               >
                 {platform.name}
               </a>
@@ -53,12 +57,13 @@ const musicPlatforms = [
           </div>
         </div>
         
+        <!-- Правая часть: Текст и треки -->
         <div class="flex flex-col">
-          <h3 class="text-xl font-semibold mb-2">{album.data.title}</h3>
-          <time class="text-zinc-400 text-sm block mb-4">{formatDate(album.data.releaseDate)}</time>
+          <h3 class="text-xl font-semibold mb-2 text-center md:text-left">{album.data.title}</h3>
+          <time class="text-zinc-400 text-sm block mb-4 text-center md:text-left">{formatDate(album.data.releaseDate)}</time>
           
           {album.data.description && (
-            <p class="text-zinc-400 text-sm mb-4">{album.data.description}</p>
+            <p class="text-zinc-400 text-sm mb-6 text-center md:text-left">{album.data.description}</p>
           )}
           
           <ol class="space-y-1 text-zinc-300 flex-grow">
@@ -73,6 +78,7 @@ const musicPlatforms = [
             ))}
           </ol>
         </div>
+        
       </article>
     ))}
   </div>
