@@ -9,14 +9,15 @@ interface Props {
 const { productName, price, googleFormUrl, modalId } = Astro.props;
 ---
 
-<div class="modal hidden fixed inset-0 z-50 overflow-y-auto" id={modalId}>
+<div class="modal hidden fixed inset-0 z-50 overflow-y-auto group" id={modalId}>
   <div class="modal-backdrop absolute inset-0 bg-black/80 backdrop-blur-sm" data-close-modal></div>
   
   <div class="relative min-h-screen flex items-center justify-center p-4">
     <div class="modal-content relative bg-zinc-950 border border-zinc-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+      
       <!-- Кнопка закрытия -->
       <button 
-        class="absolute top-4 right-4 w-10 h-10 rounded-full bg-zinc-900 hover:bg-zinc-800 flex items-center justify-center text-zinc-400 hover:text-white transition-colors z-10"
+        class="absolute top-4 right-4 w-10 h-10 rounded-full border border-white/30 bg-black/30 hover:bg-white hover:text-black text-white backdrop-blur-md transition-all duration-300 hover:rotate-90 flex items-center justify-center z-10"
         data-close-modal
         aria-label="Закрыть"
       >
@@ -48,11 +49,13 @@ const { productName, price, googleFormUrl, modalId } = Astro.props;
           </div>
         </div>
 
-        <!-- Форма -->
+        <!-- Форма и юридическое согласие -->
         <div>
-          <p class="text-sm text-zinc-400 mb-3">
-            Укажите ФИО, email и адрес доставки для товара <strong class="text-white">{productName}</strong>.
+          <!-- Ссылка на оферту с параметром ?from=order -->
+          <p class="text-xs text-zinc-500 mb-3">
+            Нажимая кнопку «Отправить» в форме ниже, вы автоматически соглашаетесь с условиями <a href="/legal?from=order" class="text-zinc-300 underline hover:text-white transition-colors">Публичной оферты</a>.
           </p>
+
           <div class="rounded-lg overflow-hidden border border-zinc-800 bg-white">
             <iframe 
               src={googleFormUrl}
@@ -71,7 +74,7 @@ const { productName, price, googleFormUrl, modalId } = Astro.props;
               <p class="text-sm text-yellow-200 font-medium mb-1">Важно!</p>
               <p class="text-sm text-yellow-100/80">
                 Ссылка на оплату появится <strong>только после успешной отправки формы</strong>. 
-                Если вы не заполните обязательные поля, форма не отправится.
+                Если вы не заполните обязательные поля, форма не отправится и ссылка не появится.
               </p>
             </div>
           </div>

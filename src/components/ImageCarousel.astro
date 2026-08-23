@@ -1,63 +1,133 @@
 ---
-interface Props {
-  images: string[];
-  productName: string;
+interface ImageSource {
+  desktop: string;
+  mobile?: string;
 }
 
-const { images, productName } = Astro.props;
+interface Props {
+  images: (string | ImageSource)[];
+  productName?: string;
+  showArrows?: boolean;
+  arrowStyle?: 'default' | 'hero';
+  arrowSpacing?: 'sm' | 'md' | 'lg';
+  dotsSpacing?: 'sm' | 'md' | 'lg';
+  className?: string;
+  dotsClassName?: string;
+}
+
+const { 
+  images, 
+  productName = "Изображение", 
+  showArrows = true, 
+  arrowStyle = 'default', 
+  arrowSpacing = 'md',
+  dotsSpacing = 'md',
+  className = "aspect-square rounded-lg bg-zinc-900",
+  dotsClassName = ""
+} = Astro.props;
+
 const carouselId = `carousel-${Math.random().toString(36).substring(7)}`;
+
+const normalizedImages = images.map(img => 
+  typeof img === 'string' ? { desktop: img, mobile: img } : img
+);
+
+// Отступы для стрелок
+const spacingClasses = {
+  sm: { left: 'left-1 md:left-2', right: 'right-1 md:right-2' },
+  md: { left: 'left-3 md:left-8', right: 'right-3 md:right-8' },
+  lg: { left: 'left-6 md:left-16', right: 'right-6 md:right-16' },
+};
+
+// Отступы для точек снизу
+const dotsSpacingClasses = {
+  sm: 'bottom-1',
+  md: 'bottom-3',
+  lg: 'bottom-5',
+};
 ---
 
-<div class="carousel-container relative w-full overflow-hidden rounded-lg bg-zinc-900 aspect-square" id={carouselId}>
+<div class={`carousel-container relative w-full overflow-hidden ${className} group`} id={carouselId}>
   <!-- Слайды -->
   <div class="carousel-track flex transition-transform duration-500 ease-out h-full" data-track>
-    {images.map((image, index) => (
-      <div class="carousel-slide min-w-full h-full" data-slide={index}>
+    {normalizedImages.map((img, index) => (
+      <div class="carousel-slide min-w-full h-full relative" data-slide={index}>
         <img 
-          src={image} 
-          alt={`${productName} - фото ${index + 1}`} 
-          class="w-full h-full object-cover select-none" 
+          src={img.mobile || img.desktop} 
+          alt={`${productName} - фото ${index + 1} (моб.)`} 
+          class="w-full h-full object-cover select-none md:hidden" 
           loading={index === 0 ? "eager" : "lazy"} 
-		  decoding="async" 
+          decoding="async" 
+          draggable="false"
+        />
+        <img 
+          src={img.desktop} 
+          alt={`${productName} - фото ${index + 1} (деск.)`} 
+          class="w-full h-full object-cover select-none hidden md:block" 
+          loading={index === 0 ? "eager" : "lazy"} 
+          decoding="async" 
           draggable="false"
         />
       </div>
     ))}
   </div>
 
-  <!-- Стрелки (показываем только если больше 1 фото) -->
-  {images.length > 1 && (
+  <!-- Стрелки -->
+  {normalizedImages.length > 1 && showArrows && (
     <>
-      <button 
-        class="carousel-prev absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/70 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-sm transition-colors z-10"
-        aria-label="Предыдущее фото"
-        data-prev
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-      <button 
-        class="carousel-next absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/70 hover:bg-black/90 text-white flex items-center justify-center backdrop-blur-sm transition-colors z-10"
-        aria-label="Следующее фото"
-        data-next
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
+		<button 
+		  class={`group/carousel-prev absolute flex items-center justify-center transition-all duration-300 z-20
+			${arrowStyle === 'hero' 
+			  ? `top-1/2 -translate-y-1/2 ${spacingClasses[arrowSpacing].left} w-16 h-20 opacity-0 group-hover:opacity-100 hover:scale-110` 
+			  : 'top-1/2 -translate-y-1/2 left-3 w-9 h-9 rounded-full border border-white/30 bg-black/30 hover:bg-white hover:text-black text-white backdrop-blur-md opacity-0 group-hover:opacity-100'
+			}`}
+		  aria-label="Предыдущее фото"
+		  data-prev
+		>
+		  {arrowStyle === 'hero' ? (
+			<svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-14 transition-all duration-300 group-hover/carousel-prev:stroke-white" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5" style="filter: drop-shadow(0 0 2px rgba(255,255,255,0.5));">
+			  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+			</svg>
+		  ) : (
+			<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+			  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+			</svg>
+		  )}
+		</button>
 
-      <!-- Индикаторы -->
-      <div class="carousel-dots absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10" data-dots>
-        {images.map((_, index) => (
-          <button 
-            class={`dot w-2 h-2 rounded-full transition-all ${index === 0 ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/75'}`}
-            aria-label={`Перейти к фото ${index + 1}`}
-            data-dot={index}
-          ></button>
-        ))}
-      </div>
+		<button 
+		  class={`group/carousel-next absolute flex items-center justify-center transition-all duration-300 z-20
+			${arrowStyle === 'hero' 
+			  ? `top-1/2 -translate-y-1/2 ${spacingClasses[arrowSpacing].right} w-16 h-20 opacity-0 group-hover:opacity-100 hover:scale-110` 
+			  : 'top-1/2 -translate-y-1/2 right-3 w-9 h-9 rounded-full border border-white/30 bg-black/30 hover:bg-white hover:text-black text-white backdrop-blur-md opacity-0 group-hover:opacity-100'
+			}`}
+		  aria-label="Следующее фото"
+		  data-next
+		>
+		  {arrowStyle === 'hero' ? (
+			<svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-14 transition-all duration-300 group-hover/carousel-next:stroke-white" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2.5" style="filter: drop-shadow(0 0 2px rgba(255,255,255,0.5));">
+			  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+			</svg>
+		  ) : (
+			<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+			  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+			</svg>
+		  )}
+		</button>
     </>
+  )}
+
+  <!-- Индикаторы (точки) -->
+  {normalizedImages.length > 1 && (
+    <div class={`carousel-dots absolute flex gap-2 z-30 px-3 py-1.5 rounded-full bg-black/20 backdrop-blur-sm border border-white/10 left-1/2 -translate-x-1/2 ${dotsClassName || dotsSpacingClasses[dotsSpacing]} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} data-dots>
+      {normalizedImages.map((_, index) => (
+        <button 
+          class={`dot w-2 h-2 rounded-full transition-all ${index === 0 ? 'bg-white w-6' : 'bg-white/60 hover:bg-white'}`}
+          aria-label={`Перейти к фото ${index + 1}`}
+          data-dot={index}
+        ></button>
+      ))}
+    </div>
   )}
 </div>
 
@@ -77,11 +147,11 @@ const carouselId = `carousel-${Math.random().toString(36).substring(7)}`;
       track.style.transform = `translateX(-${currentIndex * 100}%)`;
       dots.forEach((dot, i) => {
         if (i === currentIndex) {
-          dot.classList.remove('bg-white/50', 'w-2');
+          dot.classList.remove('bg-white/60', 'w-2');
           dot.classList.add('bg-white', 'w-6');
         } else {
           dot.classList.remove('bg-white', 'w-6');
-          dot.classList.add('bg-white/50', 'w-2');
+          dot.classList.add('bg-white/60', 'w-2');
         }
       });
     };
@@ -91,48 +161,23 @@ const carouselId = `carousel-${Math.random().toString(36).substring(7)}`;
       updateCarousel();
     };
 
-    if (prevBtn) {
-      prevBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        goToSlide(currentIndex - 1);
-      });
-    }
-    
-    if (nextBtn) {
-      nextBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        goToSlide(currentIndex + 1);
-      });
-    }
-    
+    if (prevBtn) prevBtn.addEventListener('click', (e) => { e.stopPropagation(); goToSlide(currentIndex - 1); });
+    if (nextBtn) nextBtn.addEventListener('click', (e) => { e.stopPropagation(); goToSlide(currentIndex + 1); });
     dots.forEach((dot, i) => {
-      dot.addEventListener('click', (e) => {
-        e.stopPropagation();
-        goToSlide(i);
-      });
+      dot.addEventListener('click', (e) => { e.stopPropagation(); goToSlide(i); });
     });
 
-    // Свайпы для мобильных
     let touchStartX = 0;
     let touchEndX = 0;
-    
-    container.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-    
+    container.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
     container.addEventListener('touchend', (e) => {
       touchEndX = e.changedTouches[0].screenX;
       const diff = touchStartX - touchEndX;
       if (Math.abs(diff) > 50) {
-        if (diff > 0) {
-          goToSlide(currentIndex + 1);
-        } else {
-          goToSlide(currentIndex - 1);
-        }
+        diff > 0 ? goToSlide(currentIndex + 1) : goToSlide(currentIndex - 1);
       }
     }, { passive: true });
 
-    // Инициализация
     updateCarousel();
   });
 </script>

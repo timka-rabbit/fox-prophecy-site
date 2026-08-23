@@ -19,10 +19,18 @@ const YOOKASSA_PAYMENT_LINK_MINI_CD = "https://yookassa.ru/integration/payment/l
 
 <BaseLayout title="Fox Prophecy | Official Site">
   <main class="flex flex-col min-h-screen bg-zinc-950 text-zinc-100">
-    <HeroSection 
-      artistName="Fox Prophecy" 
-      heroImage="/photos/fox-prophecy-hero.jpg"
-      heroImageMobile="/photos/fox-prophecy-hero-mobile.jpg"
+	<HeroSection 
+	  artistName="Fox Prophecy" 
+	  // Если для второго фото нет мобильной версии, просто не указывается 
+	  // Компонент автоматически использует desktop для обоих экранов.
+	  images={[
+		{ 
+		  desktop: "/photos/hero-1-desktop.jpg",
+		},
+//		{ 
+//		  desktop: "/photos/hero-2-desktop.jpg", 
+//		}
+	  ]}
 	/>
     
     <AboutSection 

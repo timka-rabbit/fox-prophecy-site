@@ -10,6 +10,8 @@ images: []
 
 albumSlug: "dark-matter"
 status: "coming-soon"
+# status: "available"
+# status: "sold-out"
 
 features:
   - "Диск mini-CD"

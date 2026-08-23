@@ -111,29 +111,73 @@ const getStatusBadge = (status: string) => {
 
 <script client:load>
   document.addEventListener('DOMContentLoaded', () => {
+    // Функция открытия модалки
+    const openModal = (modalId) => {
+      const modal = document.getElementById(modalId);
+      if (modal) {
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+    };
+
+    // Функция закрытия модалки
+    const closeModal = (modal) => {
+      if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+        // Очищаем параметр openModal из URL при закрытии, не создавая новую запись в истории
+        const url = new URL(window.location);
+        url.searchParams.delete('openModal');
+        window.history.replaceState(null, '', url);
+      }
+    };
+
+    // Проверяем URL при загрузке: если есть параметр openModal, открываем модалку автоматически
+    const urlParams = new URLSearchParams(window.location.search);
+    const modalToOpen = urlParams.get('openModal');
+    if (modalToOpen) {
+      openModal(modalToOpen);
+    }
+
+    // Обработчик кнопки "Заказать"
     document.querySelectorAll('[data-open-modal]').forEach(button => {
       button.addEventListener('click', () => {
         const modalId = button.getAttribute('data-open-modal');
-        const modal = document.getElementById(modalId);
-        if (modal) {
-          modal.classList.remove('hidden');
-          document.body.style.overflow = 'hidden';
-        }
+        openModal(modalId);
+        // Добавляем параметр в URL и создаем запись в истории браузера
+        const url = new URL(window.location);
+        url.searchParams.set('openModal', modalId);
+        window.history.pushState({ modalId }, '', url);
       });
     });
 
+    // Обработчики закрытия модалки
     document.querySelectorAll('[data-close-modal]').forEach(element => {
       element.addEventListener('click', () => {
-        const modal = element.closest('.modal');
-        if (modal) {
-          modal.classList.add('hidden');
-          document.body.style.overflow = '';
-        }
+        closeModal(element.closest('.modal'));
       });
     });
 
+    // Закрытие по клику на затемненный фон (backdrop)
+    document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
+      backdrop.addEventListener('click', () => {
+        closeModal(backdrop.closest('.modal'));
+      });
+    });
+
+    // Закрытие по клавише Escape
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
+        document.querySelectorAll('.modal:not(.hidden)').forEach(modal => {
+          closeModal(modal);
+        });
+      }
+    });
+
+    // Обработка системной кнопки "Назад" в браузере
+    window.addEventListener('popstate', (event) => {
+      // Если в состоянии нет modalId, значит мы вернулись к "чистому" состоянию страницы (без модалки)
+      if (!event.state || !event.state.modalId) {
         document.querySelectorAll('.modal:not(.hidden)').forEach(modal => {
           modal.classList.add('hidden');
           document.body.style.overflow = '';

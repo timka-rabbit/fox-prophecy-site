@@ -6,8 +6,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   <main class="min-h-screen bg-zinc-950 text-zinc-100 py-8 md:py-12 px-6">
     <div class="max-w-4xl mx-auto">
       
-      <!-- Кнопка "На главную" -->
+      <!-- Кнопка "Назад" (управляется клиентским скриптом ниже) -->
       <a 
+        id="back-link"
         href="/" 
         class="inline-flex items-center gap-2 text-zinc-400 hover:text-white transition-colors mb-8 group w-fit"
       >
@@ -21,7 +22,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         >
           <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
-        <span class="text-sm font-medium">На главную</span>
+        <span id="back-text" class="text-sm font-medium">На главную</span>
       </a>
 
       <h1 class="text-3xl md:text-4xl font-bold mb-8">Публичная оферта</h1>
@@ -30,8 +31,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <section>
           <h2 class="text-2xl font-bold text-white mb-4">1. Общие положения</h2>
           <p>
-            Настоящая публичная оферта (далее — «Оферта») определяет условия 
-            приобретения товаров в интернет-магазине Fox Prophecy (далее — «Продавец»).
+            1.1. Настоящая публичная оферта (далее — «Оферта») определяет условия 
+            приобретения товаров <strong>на официальном сайте Fox Prophecy</strong> (далее — «Продавец»).
+          </p>
+          <p>
+            1.2. Сайт носит информационный характер и не является публичной офертой, 
+            определяемой положениями Статьи 437 Гражданского кодекса РФ, до момента 
+            оформления конкретного заказа Покупателем.
           </p>
         </section>
 
@@ -73,7 +79,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             4.3. Официальным подтверждением оплаты является электронный чек, 
             формируемый Продавцом в приложении «Мой налог» в соответствии с 
             ФЗ № 422-ФЗ. Чек направляется Покупателю на указанный email 
-            <strong>при обработке заказа и подготовке его к отправке</strong>.
+            <strong> при обработке заказа и подготовке его к отправке</strong>.
           </p>
           <p>
             4.4. Сразу после проведения платежа Покупатель также получает 
@@ -85,28 +91,31 @@ import BaseLayout from '../layouts/BaseLayout.astro';
         <section>
           <h2 class="text-2xl font-bold text-white mb-4">5. Доставка</h2>
           <p>
-            5.1. Доставка осуществляется двумя способами:
+            5.1. Доставка товаров осуществляется Продавцом <strong>только по территории Российской Федерации</strong>.
+          </p>
+          <p>
+            5.2. Доставка осуществляется двумя способами:
           </p>
           <ul class="list-disc list-inside space-y-1 ml-4">
-            <li><strong>Яндекс Доставка</strong> (до пункта выдачи) — если по адресу 
+            <li><strong>Яндекс Доставка</strong> (до пункта выдачи) — приоритетный способ, если по адресу 
             Покупателя есть пункт выдачи Яндекс</li>
             <li><strong>Почта России</strong> — если пункт выдачи Яндекс недоступен 
             по адресу Покупателя</li>
           </ul>
           <p>
-            5.2. Выбор способа доставки осуществляется Продавцом автоматически 
+            5.3. Выбор способа доставки осуществляется Продавцом автоматически 
             в зависимости от доступности пунктов выдачи по адресу Покупателя.
           </p>
           <p>
-            5.3. Продавец обязуется отправить товар после получения оплаты. 
+            5.4. Продавец обязуется отправить товар после получения оплаты. 
             Точная дата отправки зависит от личной занятости Продавца.
           </p>
           <p>
-            5.4. После отправки товара Продавец информирует Покупателя через 
+            5.5. После отправки товара Продавец информирует Покупателя через 
             email с указанием трек-номера для отслеживания.
           </p>
           <p>
-            5.5. Сроки доставки зависят от выбранной службы и региона Покупателя:
+            5.6. Сроки доставки зависят от выбранной службы и региона Покупателя:
           </p>
           <ul class="list-disc list-inside space-y-1 ml-4">
             <li>Яндекс Доставка: 3-10 дней</li>
@@ -136,6 +145,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <strong>ИНН:</strong> 330710418720<br />
             <strong>Email:</strong> ar.buyanow@yandex.ru<br />
             <strong>Telegram:</strong> @fox_prophecy_metal<br />
+            <strong>ВКонтакте:</strong> vk.ru/fox_prophecy<br />
             <strong>Сайт:</strong> fox-prophecy.ru
           </p>
         </section>
@@ -157,4 +167,28 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </div>
     </div>
   </main>
+
+  <!-- Клиентский скрипт для определения параметра -->
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const from = urlParams.get('from');
+    
+    const backLink = document.getElementById('back-link');
+    const backText = document.getElementById('back-text');
+
+    if (from === 'order') {
+      backText.textContent = 'Вернуться к заказу';
+      
+      backLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        // document.referrer содержит полный URL страницы, с которой пришел пользователь (включая ?openModal=...)
+        // Если по какой-то причине его нет (например, прямой заход по ссылке), возвращаем на главную
+        const returnUrl = document.referrer || '/';
+        window.location.href = returnUrl;
+      });
+    } else {
+      backText.textContent = 'На главную';
+      backLink.href = '/';
+    }
+  </script>
 </BaseLayout>

@@ -21,6 +21,7 @@ const musicPlatforms = [
   { name: "VK Music", url: "https://vk.ru/music/album/-2000989942_27989942_cc6918954d8c02d5a1" },
   { name: "Spotify", url: "https://open.spotify.com/album/4vBQD2GNLFqtr5HgGhuEMF?si=TCNikDZmSAmPo1NsKOj7Hg" },
   { name: "Apple Music", url: "https://music.apple.com/us/artist/fox-prophecy/1883724705" },
+  { name: "Звук", url: "https://zvuk.com/release/50930616" },
 ];
 ---
 
@@ -28,58 +29,71 @@ const musicPlatforms = [
   <h2 class="text-3xl font-bold mb-4 md:mb-6 tracking-tight text-center">Дискография</h2>
   
   <div class="space-y-16">
-    {sortedAlbums.map((album) => (
-      <article class="grid md:grid-cols-[1fr_1fr] gap-8 md:gap-10 items-stretch">
-        
-        <!-- Левая часть: Обложка и кнопки -->
-        <div class="flex flex-col">
-          <img 
-            src={album.data.coverImage} 
-            alt={`Обложка альбома ${album.data.title}`} 
-            class="w-full aspect-square object-cover rounded-sm shadow-lg" 
-            loading="lazy" 
-            decoding="async"
-          />
+    {sortedAlbums.map((album) => {
+      const platformCount = musicPlatforms.length;
+      const isOddCount = platformCount % 2 !== 0;
+      
+      return (
+        <article class="grid md:grid-cols-[1fr_1fr] gap-8 md:gap-10 items-stretch">
           
-          <!-- Ссылки на площадки -->
-          <!-- На телефоне: сетка 2x2 для идеального выравнивания. На ПК: flex-контейнер в ряд -->
-          <div class="mt-4 grid grid-cols-2 gap-2 md:flex md:flex-wrap md:justify-center md:gap-3">
-            {musicPlatforms.map((platform) => (
-              <a 
-                href={platform.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-center text-xs text-zinc-400 hover:text-white hover:border-zinc-600 transition-colors border border-zinc-800 px-3 py-2 rounded-full"
-              >
-                {platform.name}
-              </a>
-            ))}
+          <!-- Левая часть: Обложка и кнопки -->
+          <div class="flex flex-col">
+            <img 
+              src={album.data.coverImage} 
+              alt={`Обложка альбома ${album.data.title}`} 
+              class="w-full aspect-square object-cover rounded-sm shadow-lg" 
+              loading="lazy" 
+              decoding="async"
+            />
+            
+            <!-- Ссылки на площадки -->
+            <div class="mt-4 grid grid-cols-2 gap-2 md:flex md:flex-wrap md:justify-center md:gap-3">
+              {musicPlatforms.map((platform, index) => {
+                const isLastItem = index === platformCount - 1;
+                const shouldCenter = isOddCount && isLastItem;
+                
+                return (
+                  <a 
+                    href={platform.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class={`
+                      text-center text-xs text-zinc-400 hover:text-white hover:border-zinc-600 
+                      transition-colors border border-zinc-800 px-3 py-2 rounded-full whitespace-nowrap
+                      ${shouldCenter ? 'col-span-2 justify-self-center w-full max-w-[180px] md:col-span-1 md:w-auto md:max-w-none' : ''}
+                    `}
+                  >
+                    {platform.name}
+                  </a>
+                );
+              })}
+            </div>
           </div>
-        </div>
-        
-        <!-- Правая часть: Текст и треки -->
-        <div class="flex flex-col">
-          <h3 class="text-xl font-semibold mb-2 text-center md:text-left">{album.data.title}</h3>
-          <time class="text-zinc-400 text-sm block mb-4 text-center md:text-left">{formatDate(album.data.releaseDate)}</time>
           
-          {album.data.description && (
-            <p class="text-zinc-400 text-sm mb-6 text-center md:text-left">{album.data.description}</p>
-          )}
+          <!-- Правая часть: Текст и треки -->
+          <div class="flex flex-col">
+            <h3 class="text-xl font-semibold mb-2 text-center md:text-left">{album.data.title}</h3>
+            <time class="text-zinc-400 text-sm block mb-4 text-center md:text-left">{formatDate(album.data.releaseDate)}</time>
+            
+            {album.data.description && (
+              <p class="text-zinc-400 text-sm mb-6 text-center md:text-left">{album.data.description}</p>
+            )}
+            
+            <ol class="space-y-1 text-zinc-300 flex-grow">
+              {album.data.tracks.map((track, index) => (
+                <li class="flex justify-between py-2 border-b border-zinc-800 last:border-0 text-sm">
+                  <span>
+                    <span class="text-zinc-500 mr-4 w-6 inline-block text-right">{index + 1}.</span>
+                    {track.name}
+                  </span>
+                  <span class="text-zinc-500 tabular-nums ml-4">{track.duration}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
           
-          <ol class="space-y-1 text-zinc-300 flex-grow">
-            {album.data.tracks.map((track, index) => (
-              <li class="flex justify-between py-2 border-b border-zinc-800 last:border-0 text-sm">
-                <span>
-                  <span class="text-zinc-500 mr-4 w-6 inline-block text-right">{index + 1}.</span>
-                  {track.name}
-                </span>
-                <span class="text-zinc-500 tabular-nums ml-4">{track.duration}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
-        
-      </article>
-    ))}
+        </article>
+      );
+    })}
   </div>
 </section>
