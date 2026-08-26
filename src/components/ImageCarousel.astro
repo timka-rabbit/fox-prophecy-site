@@ -32,26 +32,29 @@ const normalizedImages = images.map(img =>
   typeof img === 'string' ? { desktop: img, mobile: img } : img
 );
 
-// Отступы для стрелок
 const spacingClasses = {
   sm: { left: 'left-1 md:left-2', right: 'right-1 md:right-2' },
   md: { left: 'left-3 md:left-8', right: 'right-3 md:right-8' },
   lg: { left: 'left-6 md:left-16', right: 'right-6 md:right-16' },
 };
 
-// Отступы для точек снизу
 const dotsSpacingClasses = {
   sm: 'bottom-1',
   md: 'bottom-3',
   lg: 'bottom-5',
 };
+
+// Вычисляем ширину track и каждого слайда
+const totalItems = normalizedImages.length + 2; // оригиналы + 2 клона
+const trackWidth = totalItems * 100; // например, 400% для 2 слайдов
+const slideWidth = 100 / totalItems; // например, 25% для 4 элементов
 ---
 
 <div class={`carousel-container relative w-full overflow-hidden ${className} group`} id={carouselId}>
   <!-- Слайды -->
-  <div class="carousel-track flex transition-transform duration-500 ease-out h-full" data-track>
+  <div class="carousel-track flex h-full" data-track style={`width: ${trackWidth}%`}>
     {normalizedImages.map((img, index) => (
-      <div class="carousel-slide min-w-full h-full relative" data-slide={index}>
+      <div class="carousel-slide h-full relative flex-shrink-0" data-slide={index} style={`width: ${slideWidth}%`}>
         <img 
           src={img.mobile || img.desktop} 
           alt={`${productName} - фото ${index + 1} (моб.)`} 
@@ -119,7 +122,7 @@ const dotsSpacingClasses = {
 
   <!-- Индикаторы (точки) -->
   {normalizedImages.length > 1 && (
-    <div class={`carousel-dots absolute flex gap-2 z-30 px-3 py-1.5 rounded-full bg-black/20 backdrop-blur-sm border border-white/10 left-1/2 -translate-x-1/2 ${dotsClassName || dotsSpacingClasses[dotsSpacing]} opacity-0 group-hover:opacity-100 transition-opacity duration-300`} data-dots>
+    <div class={`carousel-dots absolute flex gap-2 z-30 px-3 py-1.5 rounded-full bg-black/20 backdrop-blur-sm border border-white/10 left-1/2 -translate-x-1/2 ${dotsClassName || dotsSpacingClasses[dotsSpacing]} opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300`} data-dots>
       {normalizedImages.map((_, index) => (
         <button 
           class={`dot w-2 h-2 rounded-full transition-all ${index === 0 ? 'bg-white w-6' : 'bg-white/60 hover:bg-white'}`}
@@ -138,15 +141,45 @@ const dotsSpacingClasses = {
     const nextBtn = container.querySelector('[data-next]');
     const dots = container.querySelectorAll('[data-dot]');
     
-    if (!track || !dots.length) return;
+    if (!track || dots.length < 2) return;
     
-    let currentIndex = 0;
-    const totalSlides = dots.length;
+    const originalSlides = Array.from(track.children);
+    const totalSlides = originalSlides.length;
+    
+    // Клонируем первый и последний слайд
+    const firstClone = originalSlides[0].cloneNode(true);
+    const lastClone = originalSlides[totalSlides - 1].cloneNode(true);
+    
+    firstClone.setAttribute('data-clone', 'first');
+    lastClone.setAttribute('data-clone', 'last');
+    
+    track.appendChild(firstClone);
+    track.insertBefore(lastClone, originalSlides[0]);
+    
+    // Пересчитываем ширину track и слайдов после добавления клонов
+    const totalItems = track.children.length;
+    const slideWidthPercent = 100 / totalItems;
+    
+    Array.from(track.children).forEach(slide => {
+      slide.style.width = `${slideWidthPercent}%`;
+    });
+    
+    track.style.width = `${totalItems * 100}%`;
+    
+    let currentIndex = 1;
+    let isTransitioning = false;
 
-    const updateCarousel = () => {
-      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+    const updateCarousel = (instant = false) => {
+      if (instant) {
+        track.style.transition = 'none';
+      } else {
+        track.style.transition = 'transform 500ms ease-out';
+      }
+      track.style.transform = `translateX(-${currentIndex * slideWidthPercent}%)`;
+      
+      const realIndex = (currentIndex - 1 + totalSlides) % totalSlides;
       dots.forEach((dot, i) => {
-        if (i === currentIndex) {
+        if (i === realIndex) {
           dot.classList.remove('bg-white/60', 'w-2');
           dot.classList.add('bg-white', 'w-6');
         } else {
@@ -156,28 +189,69 @@ const dotsSpacingClasses = {
       });
     };
 
-    const goToSlide = (index) => {
-      currentIndex = ((index % totalSlides) + totalSlides) % totalSlides;
-      updateCarousel();
-    };
+    track.addEventListener('transitionend', () => {
+      if (currentIndex === 0) {
+        currentIndex = totalSlides;
+        updateCarousel(true);
+      } else if (currentIndex === totalSlides + 1) {
+        currentIndex = 1;
+        updateCarousel(true);
+      }
+      isTransitioning = false;
+    });
 
-    if (prevBtn) prevBtn.addEventListener('click', (e) => { e.stopPropagation(); goToSlide(currentIndex - 1); });
-    if (nextBtn) nextBtn.addEventListener('click', (e) => { e.stopPropagation(); goToSlide(currentIndex + 1); });
+    if (prevBtn) {
+      prevBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (isTransitioning) return;
+        isTransitioning = true;
+        currentIndex--;
+        updateCarousel(false);
+      });
+    }
+    
+    if (nextBtn) {
+      nextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (isTransitioning) return;
+        isTransitioning = true;
+        currentIndex++;
+        updateCarousel(false);
+      });
+    }
+    
     dots.forEach((dot, i) => {
-      dot.addEventListener('click', (e) => { e.stopPropagation(); goToSlide(i); });
+      dot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (isTransitioning) return;
+        isTransitioning = true;
+        currentIndex = i + 1;
+        updateCarousel(false);
+      });
     });
 
     let touchStartX = 0;
     let touchEndX = 0;
-    container.addEventListener('touchstart', (e) => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+    
+    container.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    
     container.addEventListener('touchend', (e) => {
       touchEndX = e.changedTouches[0].screenX;
       const diff = touchStartX - touchEndX;
       if (Math.abs(diff) > 50) {
-        diff > 0 ? goToSlide(currentIndex + 1) : goToSlide(currentIndex - 1);
+        if (isTransitioning) return;
+        isTransitioning = true;
+        if (diff > 0) {
+          currentIndex++;
+        } else {
+          currentIndex--;
+        }
+        updateCarousel(false);
       }
     }, { passive: true });
 
-    updateCarousel();
+    updateCarousel(true);
   });
 </script>

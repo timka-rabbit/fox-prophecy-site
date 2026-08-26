@@ -57,9 +57,14 @@ const navLinks = [
 	  />
       
       <!-- Градиенты -->
-      <div class="absolute inset-0 bg-gradient-to-b from-transparent to-zinc-950 md:hidden z-10 pointer-events-none" />
-      <div class="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/50 to-transparent md:block hidden z-10 pointer-events-none" />
-      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-zinc-950 md:block hidden z-10 pointer-events-none" />
+	  <!-- Мобильный: градиент снизу -->
+      <div class="absolute bottom-0 left-0 right-0 h-[25%] bg-gradient-to-t from-zinc-950 to-transparent md:hidden z-10 pointer-events-none" />
+      
+      <!-- Десктоп: градиент слева -->
+      <div class="absolute top-0 bottom-0 left-0 w-[25%] bg-gradient-to-r from-zinc-950 via-zinc-950/50 to-transparent hidden md:block z-10 pointer-events-none" />
+      
+      <!-- Десктоп: градиент снизу -->
+      <div class="absolute bottom-0 left-0 right-0 h-[25%] bg-gradient-to-t from-zinc-950 to-transparent hidden md:block z-10 pointer-events-none" />
 
     </div>
 
